@@ -69,8 +69,8 @@ class EchoVerb(VerbExtension):
             )
         )
         parser.add_argument(
-            '--field', type=str, default=None,
-            help='Echo a selected field of a message. '
+            '--field', action='append', type=str, default=None,
+            help='Specify one or more fields to echo. Use multiple --field options for multiple fields.'
                  "Use '.' to select sub-fields. "
                  'For example, to echo the position field of a nav_msgs/msg/Odometry message: '
                  "'ros2 topic echo /odom --field pose.pose.position'",
@@ -181,10 +181,15 @@ class EchoVerb(VerbExtension):
 
         # Validate field selection
         self.field = args.field
-        if self.field is not None:
-            self.field = list(filter(None, self.field.split('.')))
-            if not self.field:
-                raise RuntimeError(f"Invalid field value '{args.field}'")
+        if args.field:
+            for field in args.field:
+                try:
+                    value = get_field_value(message, field)
+                    print(f'{field}: {value}')
+                except AttributeError:
+                    print(f"Error: Field '{field}' not found in the message.")
+        else:
+            print(message)
 
         self.truncate_length = args.truncate_length if not args.full_length else None
         self.no_arr = args.no_arr
