@@ -588,6 +588,21 @@ class TestROS2TopicCLI(unittest.TestCase):
                 ], strict=True
             ), timeout=10)
         assert topic_command.wait_for_shutdown(timeout=10)
+    
+    @launch_testing.markers.retry_on_failure(times=5, delay=1)
+    def test_topic_echo_multiple_fields(self):
+        with self.launch_topic_command(
+            arguments=['echo', '/arrays', '--field', 'alignment_check', '--field', 'data']
+    ) as topic_command:
+        assert topic_command.wait_for_output(functools.partial(
+            launch_testing.tools.expect_output, expected_lines=[
+                'alignment_check: 0',
+                'data: []',
+                '---',
+            ], strict=True
+        ), timeout=10)
+    assert topic_command.wait_for_shutdown(timeout=10)
+
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
     def test_topic_echo_field_nested(self):
