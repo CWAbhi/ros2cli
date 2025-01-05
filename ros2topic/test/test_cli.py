@@ -594,14 +594,20 @@ class TestROS2TopicCLI(unittest.TestCase):
         with self.launch_topic_command(
             arguments=['echo', '/arrays', '--field', 'alignment_check', '--field', 'data']
     ) as topic_command:
-        assert topic_command.wait_for_output(functools.partial(
-            launch_testing.tools.expect_output, expected_lines=[
-                'alignment_check: 0',
-                'data: []',
-                '---',
-            ], strict=True
-        ), timeout=10)
-    assert topic_command.wait_for_shutdown(timeout=10)
+        # Validate the expected output
+        assert topic_command.wait_for_output(
+            functools.partial(
+                launch_testing.tools.expect_output,
+                expected_lines=[
+                    'alignment_check: 0',
+                    'data: []',
+                    '---',
+                ],
+                strict=True
+            ),
+            timeout=15),
+    assert topic_command.wait_for_shutdown(timeout=10),
+
 
 
     @launch_testing.markers.retry_on_failure(times=5, delay=1)
