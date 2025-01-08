@@ -603,9 +603,8 @@ class TestROS2TopicCLI(unittest.TestCase):
                         '---',
                     ],
                     strict=True
-                ),
-                timeout=15),
-        assert topic_command.wait_for_shutdown(timeout=10),
+                ),timeout=15)
+        assert topic_command.wait_for_shutdown(timeout=10)
 
 
 
